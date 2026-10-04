@@ -1,0 +1,12 @@
+/build/
+/_build/
+/.flatpak/
+/.flatpak-builder/
+/repo/
+/subprojects/*/
+/subprojects/.wraplock
+/subprojects/packagecache/
+
+# Personal Claude Code instructions and settings
+/CLAUDE.local.md
+/.claude/settings.local.json

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2026 Jack Tully -->
+<schemalist gettext-domain="turntable">
+  <schema id="io.github.jackicus.Turntable" path="/io/github/jackicus/Turntable/">
+    <key name="window-width" type="i">
+      <default>960</default>
+      <summary>Window width</summary>
+    </key>
+    <key name="window-height" type="i">
+      <default>720</default>
+      <summary>Window height</summary>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Window maximised</summary>
+    </key>
+    <key name="auto-rotate" type="b">
+      <default>false</default>
+      <summary>Rotate the model slowly, like a turntable</summary>
+    </key>
+    <key name="lighting" type="s">
+      <choices>
+        <choice value="studio"/>
+        <choice value="soft"/>
+        <choice value="sunlight"/>
+        <choice value="dramatic"/>
+      </choices>
+      <default>"studio"</default>
+      <summary>How the model is lit</summary>
+    </key>
+    <key name="display-mode" type="s">
+      <choices>
+        <choice value="shaded"/>
+        <choice value="wireframe"/>
+        <choice value="shaded-wireframe"/>
+      </choices>
+      <default>"shaded"</default>
+      <summary>Draw the model shaded, as a wireframe, or both</summary>
+    </key>
+    <key name="show-grid" type="b">
+      <default>false</default>
+      <summary>Show a grid on the floor under the model</summary>
+    </key>
+  </schema>
+</schemalist>

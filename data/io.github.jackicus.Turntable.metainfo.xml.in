@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2026 Jack Tully -->
+<component type="desktop-application">
+  <id>io.github.jackicus.Turntable</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+  <name>3D Viewer</name>
+  <summary>View 3D models</summary>
+  <description>
+    <p>
+      Look at 3D models from every side. Open a model, turn it around, and see it in good light.
+    </p>
+    <ul>
+      <li>Opens glTF, GLB, OBJ, STL, PLY, FBX and 3MF files</li>
+      <li>Turn, move and zoom with the mouse, touchpad, touchscreen or keyboard</li>
+      <li>Studio, soft, sunlight and dramatic lighting</li>
+      <li>Shaded and wireframe views, and a floor grid</li>
+      <li>Plays the animations a model comes with</li>
+      <li>Rotates slowly on its own, like a turntable</li>
+      <li>Shows a model's size, vertices, triangles and materials</li>
+      <li>Copies or saves a picture of what you see</li>
+    </ul>
+  </description>
+  <developer id="io.github.jackicus">
+    <name translate="no">Jack Tully</name>
+  </developer>
+  <launchable type="desktop-id">io.github.jackicus.Turntable.desktop</launchable>
+  <url type="homepage">https://github.com/Jackicus/GNOME-Turntable</url>
+  <url type="bugtracker">https://github.com/Jackicus/GNOME-Turntable/issues</url>
+  <url type="vcs-browser">https://github.com/Jackicus/GNOME-Turntable</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/Jackicus/GNOME-Turntable/main/data/screenshots/chair.png</image>
+      <caption>A model in studio light</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Jackicus/GNOME-Turntable/main/data/screenshots/fox.png</image>
+      <caption>Animations and the model’s properties</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Jackicus/GNOME-Turntable/main/data/screenshots/lantern.png</image>
+      <caption>Wireframe over the shaded model, on a grid</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#99c1f1</color>
+    <color type="primary" scheme_preference="dark">#1a5fb4</color>
+  </branding>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <provides>
+    <binary>turntable</binary>
+    <mediatype>model/gltf-binary</mediatype>
+    <mediatype>model/gltf+json</mediatype>
+    <mediatype>model/obj</mediatype>
+    <mediatype>model/stl</mediatype>
+    <mediatype>model/3mf</mediatype>
+  </provides>
+  <translation type="gettext">turntable</translation>
+  <releases>
+    <release version="0.1.0" date="2026-10-04">
+      <description>
+        <p>The first release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

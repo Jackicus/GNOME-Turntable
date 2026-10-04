@@ -1,0 +1,16 @@
+#!@GJS@ -m
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Jack Tully
+
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import System from 'system';
+
+Gio.resources_register(Gio.Resource.load('@PKGDATADIR@/turntable.gresource'));
+const {main} = await import('resource:///io/github/jackicus/Turntable/js/main.js');
+const status = await main([System.programInvocationName, ...ARGV], {
+    version: '@VERSION@',
+    localedir: '@LOCALEDIR@',
+    devtools: GLib.getenv('TURNTABLE_DEVTOOLS') === '1',
+});
+System.exit(status);

@@ -1,0 +1,458 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TurntableWindow: Adw.ApplicationWindow {
+  default-width: 960;
+  default-height: 720;
+  width-request: 360;
+  height-request: 294;
+  title: _("3D Viewer");
+
+  Adw.Breakpoint {
+    condition ("max-width: 640sp")
+
+    setters {
+      split_view.collapsed: true;
+    }
+  }
+
+  content: Adw.ToastOverlay toast_overlay {
+    child: Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        [start]
+        Gtk.Button {
+          label: _("_Open");
+          use-underline: true;
+          action-name: "win.open";
+          tooltip-text: _("Open a Model");
+        }
+
+        title-widget: Adw.WindowTitle window_title {
+          title: _("3D Viewer");
+        };
+
+        [end]
+        Gtk.MenuButton {
+          icon-name: "open-menu-symbolic";
+          menu-model: primary_menu;
+          primary: true;
+          tooltip-text: _("Main Menu");
+        }
+
+        [end]
+        Gtk.ToggleButton {
+          icon-name: "info-outline-symbolic";
+          action-name: "win.properties";
+          tooltip-text: _("Properties");
+        }
+      }
+
+      content: Adw.OverlaySplitView split_view {
+        sidebar-position: end;
+        show-sidebar: false;
+        min-sidebar-width: 260;
+        max-sidebar-width: 320;
+
+        content: Gtk.Overlay {
+          child: Gtk.Stack stack {
+            transition-type: crossfade;
+
+            Gtk.StackPage {
+              name: "empty";
+
+              child: Adw.StatusPage {
+                icon-name: "io.github.jackicus.Turntable-symbolic";
+                title: _("View 3D Models");
+                description: _("Drag and drop a model here");
+
+                child: Gtk.Button {
+                  label: _("_Open Model…");
+                  use-underline: true;
+                  halign: center;
+                  action-name: "win.open";
+
+                  styles [
+                    "pill",
+                    "suggested-action",
+                  ]
+                };
+              };
+            }
+
+            Gtk.StackPage {
+              name: "viewer";
+
+              child: Gtk.Overlay viewer_overlay {
+                [overlay]
+                Adw.Spinner spinner {
+                  halign: center;
+                  valign: center;
+                  width-request: 48;
+                  height-request: 48;
+                  visible: false;
+                }
+
+                [overlay]
+                Gtk.Box {
+                  orientation: vertical;
+                  valign: end;
+                  margin-start: 12;
+                  margin-end: 12;
+                  margin-bottom: 18;
+                  spacing: 6;
+
+                  Adw.Clamp {
+                    maximum-size: 440;
+
+                    Gtk.Box animation_controls {
+                      spacing: 6;
+                      visible: false;
+
+                      styles [
+                        "osd",
+                        "toolbar",
+                        "controls",
+                      ]
+
+                      Gtk.Button play_button {
+                        icon-name: "media-playback-pause-symbolic";
+                        action-name: "win.toggle-playback";
+                        tooltip-text: _("Pause");
+
+                        styles [
+                          "circular",
+                        ]
+                      }
+
+                      Gtk.Scale animation_scale {
+                        width-request: 100;
+                        hexpand: true;
+                        valign: center;
+                        draw-value: false;
+
+                        adjustment: Gtk.Adjustment {
+                          lower: 0;
+                          upper: 1;
+                          step-increment: 0.1;
+                          page-increment: 1;
+                        };
+
+                        accessibility {
+                          label: _("Animation Position");
+                        }
+                      }
+
+                      Gtk.DropDown clip_dropdown {
+                        visible: false;
+                        valign: center;
+                        tooltip-text: _("Animation");
+                      }
+                    }
+                  }
+
+                  Gtk.Box controls {
+                    halign: center;
+                    spacing: 6;
+                    visible: false;
+
+                    styles [
+                      "osd",
+                      "toolbar",
+                      "controls",
+                    ]
+
+                    Gtk.Button {
+                      icon-name: "zoom-fit-best-symbolic";
+                      action-name: "win.reset-view";
+                      tooltip-text: _("Reset View");
+
+                      styles [
+                        "circular",
+                      ]
+                    }
+
+                    Gtk.ToggleButton {
+                      icon-name: "object-rotate-right-symbolic";
+                      action-name: "win.auto-rotate";
+                      tooltip-text: _("Rotate Automatically");
+
+                      styles [
+                        "circular",
+                      ]
+                    }
+
+                    Gtk.MenuButton {
+                      icon-name: "display-brightness-symbolic";
+                      menu-model: view_menu;
+                      direction: up;
+                      tooltip-text: _("View Options");
+
+                      styles [
+                        "circular",
+                      ]
+                    }
+                  }
+                }
+              };
+            }
+
+            Gtk.StackPage {
+              name: "error";
+
+              child: Adw.StatusPage error_page {
+                icon-name: "dialog-warning-symbolic";
+                title: _("Could Not Open Model");
+
+                child: Gtk.Button {
+                  label: _("_Open Another…");
+                  use-underline: true;
+                  halign: center;
+                  action-name: "win.open";
+
+                  styles [
+                    "pill",
+                  ]
+                };
+              };
+            }
+          };
+
+          // Takes a drop over the whole content while something is dragged over the window,
+          // so the WebKit view underneath never receives it
+          [overlay]
+          Gtk.Box drop_area {
+            can-target: false;
+
+            styles [
+              "drop-area",
+            ]
+          }
+        };
+
+        sidebar: Adw.PreferencesPage properties {
+          Adw.PreferencesGroup {
+            title: _("Model");
+
+            Adw.ActionRow dimensions_row {
+              title: _("Dimensions");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow vertices_row {
+              title: _("Vertices");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow triangles_row {
+              title: _("Triangles");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow points_row {
+              title: _("Points");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow meshes_row {
+              title: _("Meshes");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow materials_row {
+              title: _("Materials");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow animations_row {
+              title: _("Animations");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: _("File");
+
+            Adw.ActionRow format_row {
+              title: _("Format");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow size_row {
+              title: _("File Size");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+
+            Adw.ActionRow folder_row {
+              title: _("Folder");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+
+              [suffix]
+              Gtk.Button {
+                icon-name: "folder-open-symbolic";
+                valign: center;
+                action-name: "win.show-in-files";
+                tooltip-text: _("Show in Files");
+
+                styles [
+                  "flat",
+                ]
+              }
+            }
+
+            Adw.ActionRow modified_row {
+              title: _("Modified");
+              subtitle-selectable: true;
+
+              styles [
+                "property",
+              ]
+            }
+          }
+        };
+      };
+    };
+  };
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_New Window");
+      action: "app.new-window";
+    }
+
+    item {
+      label: _("_Open…");
+      action: "win.open";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Copy Image");
+      action: "win.copy-image";
+    }
+
+    item {
+      label: _("_Save Image…");
+      action: "win.save-image";
+    }
+
+    item {
+      label: _("Show in _Files");
+      action: "win.show-in-files";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("_About 3D Viewer");
+      action: "app.about";
+    }
+  }
+}
+
+menu view_menu {
+  section {
+    label: _("Lighting");
+
+    item {
+      label: _("Studio");
+      action: "win.lighting";
+      target: "studio";
+    }
+
+    item {
+      label: _("Soft");
+      action: "win.lighting";
+      target: "soft";
+    }
+
+    item {
+      label: _("Sunlight");
+      action: "win.lighting";
+      target: "sunlight";
+    }
+
+    item {
+      label: _("Dramatic");
+      action: "win.lighting";
+      target: "dramatic";
+    }
+  }
+
+  section {
+    label: _("Display");
+
+    item {
+      label: _("Shaded");
+      action: "win.display-mode";
+      target: "shaded";
+    }
+
+    item {
+      label: _("Wireframe");
+      action: "win.display-mode";
+      target: "wireframe";
+    }
+
+    item {
+      label: _("Shaded and Wireframe");
+      action: "win.display-mode";
+      target: "shaded-wireframe";
+    }
+  }
+
+  section {
+    item {
+      label: _("Show _Grid");
+      action: "win.show-grid";
+    }
+  }
+}

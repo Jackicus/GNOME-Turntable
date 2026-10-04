@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2026 Jack Tully -->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<script>
+// The page's errors, and files it couldn't load, go to the app's log
+addEventListener('error', event => {
+  const text = event.message ? `${event.message} (${event.filename}:${event.lineno})`
+    : `Could not load ${event.target?.src ?? event.target?.href}`;
+  window.webkit?.messageHandlers?.turntable?.postMessage({type: 'log', text});
+}, true);
+addEventListener('unhandledrejection', event => {
+  window.webkit?.messageHandlers?.turntable?.postMessage({type: 'log', text: String(event.reason)});
+});
+</script>
+<script type="importmap">
+{"imports": {"three": "./three/three.module.js", "three/addons/": "./three/addons/"}}
+</script>
+<style>
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; }
+canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
+</style>
+<script type="module" src="renderer.js"></script>
+</head>
+<body></body>
+</html>

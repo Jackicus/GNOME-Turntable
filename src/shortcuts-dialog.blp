@@ -1,0 +1,86 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ShortcutsDialog shortcuts_dialog {
+  Adw.ShortcutsSection {
+    title: _("General");
+
+    Adw.ShortcutsItem {
+      title: _("Open a Model");
+      action-name: "win.open";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("New Window");
+      action-name: "app.new-window";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Show Properties");
+      action-name: "win.properties";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Keyboard Shortcuts");
+      action-name: "app.shortcuts";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Close Window");
+      action-name: "win.close";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Quit");
+      action-name: "app.quit";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("View");
+
+    Adw.ShortcutsItem {
+      title: _("Turn the Model");
+      accelerator: "Left Right Up Down";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Zoom In");
+      accelerator: "plus";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Zoom Out");
+      accelerator: "minus";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Reset View");
+      action-name: "win.reset-view";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Rotate Automatically");
+      accelerator: "r";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Play or Pause the Animation");
+      accelerator: "space";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Picture");
+
+    Adw.ShortcutsItem {
+      title: _("Copy Image");
+      action-name: "win.copy-image";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Save Image");
+      action-name: "win.save-image";
+    }
+  }
+}

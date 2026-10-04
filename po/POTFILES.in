@@ -1,0 +1,8 @@
+data/io.github.jackicus.Turntable.desktop.in
+data/io.github.jackicus.Turntable.metainfo.xml.in
+data/io.github.jackicus.Turntable.gschema.xml
+src/application.js
+src/formats.js
+src/window.blp
+src/window.js
+src/shortcuts-dialog.blp
