@@ -49,7 +49,10 @@ export const Window = GObject.registerClass({
         this._viewer_overlay.set_child(this._viewer.view);
         this._viewer.connect('action', (_viewer, name) => this.lookup_action(name)?.activate(null));
         this._viewer.connect('animation', (_viewer, playing, time) => this._onAnimation(playing, time));
+        // The renderer starts over on its defaults: give it the view's state again
         this._viewer.connect('crashed', () => {
+            this._sendTheme();
+            VIEW_SETTINGS.forEach(key => this._applySetting(key));
             if (this._file)
                 this.openFile(this._file).catch(logError);
         });
@@ -57,7 +60,10 @@ export const Window = GObject.registerClass({
         this._setUpActions();
         this._setUpDrop();
         this._setUpAnimationControls();
-        this._followStyle();
+        const style = Adw.StyleManager.get_default();
+        style.connect('notify::dark', () => this._sendTheme());
+        style.connect('notify::accent-color-rgba', () => this._sendTheme());
+        this._sendTheme();
         for (const key of VIEW_SETTINGS) {
             this._settings.connect(`changed::${key}`, () => this._applySetting(key));
             this._applySetting(key);
@@ -115,8 +121,6 @@ export const Window = GObject.registerClass({
     _setModelActionsEnabled(enabled) {
         for (const name of ['reset-view', 'copy-image', 'save-image', 'show-in-files', 'properties'])
             this.lookup_action(name).enabled = enabled;
-        if (!enabled)
-            this._split_view.show_sidebar = false;
     }
 
     // While a drag is over the window, a drop target covers the content: WebKit would
@@ -139,17 +143,12 @@ export const Window = GObject.registerClass({
         this.add_controller(motion);
     }
 
-    _followStyle() {
+    _sendTheme() {
         const style = Adw.StyleManager.get_default();
-        const send = () => {
-            const accent = style.get_accent_color_rgba();
-            const hex = [accent.red, accent.green, accent.blue]
-                .map(c => Math.round(c * 255).toString(16).padStart(2, '0')).join('');
-            this._viewer.send('theme', {dark: style.dark, accent: `#${hex}`});
-        };
-        style.connect('notify::dark', send);
-        style.connect('notify::accent-color-rgba', send);
-        send();
+        const accent = style.get_accent_color_rgba();
+        const hex = [accent.red, accent.green, accent.blue]
+            .map(c => Math.round(c * 255).toString(16).padStart(2, '0')).join('');
+        this._viewer.send('theme', {dark: style.dark, accent: `#${hex}`});
     }
 
     _applySetting(key) {
@@ -260,8 +259,11 @@ export const Window = GObject.registerClass({
         this.title = name;
     }
 
+    // The sidebar stays open from one model to the next, as in Image Viewer; only an error
+    // closes it.
     _showError(message) {
         this._viewer.close().catch(logError);
+        this._split_view.show_sidebar = false;
         this._error_page.description = message;
         this._stack.visible_child_name = 'error';
     }

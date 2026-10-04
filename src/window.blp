@@ -67,8 +67,7 @@ template $TurntableWindow: Adw.ApplicationWindow {
                 description: _("Drag and drop a model here");
 
                 child: Gtk.Button {
-                  label: _("_Open Model…");
-                  use-underline: true;
+                  label: _("Open Model…");
                   halign: center;
                   action-name: "win.open";
 
@@ -205,8 +204,7 @@ template $TurntableWindow: Adw.ApplicationWindow {
                 title: _("Could Not Open Model");
 
                 child: Gtk.Button {
-                  label: _("_Open Another…");
-                  use-underline: true;
+                  label: _("Open Another…");
                   halign: center;
                   action-name: "win.open";
 
@@ -230,7 +228,7 @@ template $TurntableWindow: Adw.ApplicationWindow {
           }
         };
 
-        sidebar: Adw.PreferencesPage properties {
+        sidebar: Adw.PreferencesPage {
           Adw.PreferencesGroup {
             title: _("Model");
 

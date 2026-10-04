@@ -490,6 +490,7 @@ function reportAnimation() {
 
 let frameRequested = false;
 let lastFrame = null;
+let lastChange = 0;
 
 function invalidate() {
     if (frameRequested)
@@ -500,8 +501,11 @@ function invalidate() {
 
 function frame(now) {
     frameRequested = false;
-    const delta = lastFrame === null ? 0 : Math.min((now - lastFrame) / 1000, 0.1);
+    const delta = lastFrame === null ? 1 / 60 : Math.min((now - lastFrame) / 1000, 0.1);
     lastFrame = now;
+    // The damping decays with time, not frames (0.05 a frame at 60 Hz), so a flick coasts the
+    // same at any refresh rate
+    controls.dampingFactor = 1 - 0.95 ** (delta * 60);
     let moving = controls.update(delta);
     if (state.playing && state.action) {
         state.mixer.update(delta);
@@ -511,7 +515,12 @@ function frame(now) {
         moving = true;
     }
     draw();
+    // The controls report a change only above a small threshold, which a slowing coast falls
+    // under a while before it ends: frames go on for a moment after the last reported one,
+    // so the coast finishes instead of stopping short.
     if (moving || controls.autoRotate)
+        lastChange = now;
+    if (now - lastChange < 250)
         invalidate();
     else
         lastFrame = null;
