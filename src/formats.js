@@ -8,14 +8,14 @@ import GLib from 'gi://GLib';
 import {gettext as _} from 'gettext';
 
 // By file extension: the renderer's loader, the name shown, and the MIME types the file
-// chooser and the desktop file offer (PLY and FBX have none in shared-mime-info).
+// chooser and the desktop file offer (PLY's and FBX's are the app's own, data/*.mime.xml).
 export const FORMATS = {
     glb: {loader: 'gltf', name: _('glTF Binary'), mimeTypes: ['model/gltf-binary']},
     gltf: {loader: 'gltf', name: _('glTF'), mimeTypes: ['model/gltf+json']},
     obj: {loader: 'obj', name: _('Wavefront OBJ'), mimeTypes: ['model/obj']},
     stl: {loader: 'stl', name: _('STL'), mimeTypes: ['model/stl']},
-    ply: {loader: 'ply', name: _('PLY'), mimeTypes: []},
-    fbx: {loader: 'fbx', name: _('FBX'), mimeTypes: []},
+    ply: {loader: 'ply', name: _('PLY'), mimeTypes: ['model/x-ply']},
+    fbx: {loader: 'fbx', name: _('FBX'), mimeTypes: ['model/x-fbx']},
     '3mf': {loader: '3mf', name: _('3MF'), mimeTypes: ['model/3mf']},
 };
 

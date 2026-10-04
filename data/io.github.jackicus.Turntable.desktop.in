@@ -8,6 +8,6 @@ Icon=io.github.jackicus.Turntable
 Terminal=false
 Type=Application
 Categories=Graphics;3DGraphics;Viewer;
-MimeType=model/gltf-binary;model/gltf+json;model/obj;model/stl;model/3mf;
+MimeType=model/gltf-binary;model/gltf+json;model/obj;model/stl;model/3mf;model/x-ply;model/x-fbx;
 StartupNotify=true
 DBusActivatable=false

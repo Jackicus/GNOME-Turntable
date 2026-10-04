@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2026 Jack Tully -->
+<!-- The model formats 3D Viewer opens that shared-mime-info doesn't define yet -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="model/x-ply">
+    <comment>PLY 3D model</comment>
+    <generic-icon name="image-x-generic"/>
+    <magic>
+      <match type="string" offset="0" value="ply\n"/>
+      <match type="string" offset="0" value="ply\r\n"/>
+    </magic>
+    <glob pattern="*.ply"/>
+  </mime-type>
+  <mime-type type="model/x-fbx">
+    <comment>FBX 3D model</comment>
+    <generic-icon name="image-x-generic"/>
+    <magic>
+      <match type="string" offset="0" value="Kaydara FBX Binary"/>
+    </magic>
+    <glob pattern="*.fbx"/>
+  </mime-type>
+</mime-info>

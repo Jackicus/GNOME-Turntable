@@ -18,6 +18,10 @@ metainfo_file = i18n.merge_file(
   install_dir: get_option('datadir') / 'metainfo',
 )
 
+install_data(app_id + '.mime.xml',
+  install_dir: get_option('datadir') / 'mime' / 'packages',
+)
+
 install_data(app_id + '.gschema.xml',
   install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )

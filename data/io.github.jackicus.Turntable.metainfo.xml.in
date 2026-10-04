@@ -63,6 +63,8 @@
     <mediatype>model/obj</mediatype>
     <mediatype>model/stl</mediatype>
     <mediatype>model/3mf</mediatype>
+    <mediatype>model/x-ply</mediatype>
+    <mediatype>model/x-fbx</mediatype>
   </provides>
   <translation type="gettext">turntable</translation>
   <releases>

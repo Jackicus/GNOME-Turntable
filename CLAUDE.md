@@ -18,7 +18,7 @@ src/scheme.js           turntable:// — the renderer from the gresource, the mo
 src/formats.js          formats by extension, property formatting (no GTK: tested)
 src/renderer/           index.html + renderer.js (the three.js scene), three/ (vendored)
 src/shortcuts-dialog.blp  Adw.ShortcutsDialog, loaded by AdwApplication (app.shortcuts)
-data/                   desktop file, metainfo, gschema, icons
+data/                   desktop file, metainfo, gschema, icons, MIME types for PLY and FBX
 tests/run.js            unit tests (gjs -m tests/run.js); tests/models/ small invented models
 scripts/                run.sh, check.sh, headless.sh, screenshot.js, update-three.sh
 ```
