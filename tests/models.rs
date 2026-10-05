@@ -211,13 +211,29 @@ fn damaged_files_never_crash() {
     }
 }
 
-/// A folder of its own for each test, under the target directory.
-fn tempdir() -> PathBuf {
+/// A folder of its own for each test, gone when the test ends.
+struct TempDir(PathBuf);
+
+impl std::ops::Deref for TempDir {
+    type Target = Path;
+
+    fn deref(&self) -> &Path {
+        &self.0
+    }
+}
+
+impl Drop for TempDir {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(self.0.parent().unwrap());
+    }
+}
+
+fn tempdir() -> TempDir {
     use std::sync::atomic::{AtomicUsize, Ordering};
     static NEXT: AtomicUsize = AtomicUsize::new(0);
     let dir = std::env::temp_dir()
         .join(format!("turntable-test-{}-{}", std::process::id(), NEXT.fetch_add(1, Ordering::Relaxed)))
         .join("models");
     std::fs::create_dir_all(&dir).unwrap();
-    dir
+    TempDir(dir)
 }
