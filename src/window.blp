@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Jack Tully
+
 using Gtk 4.0;
 using Adw 1;
 
@@ -82,7 +85,33 @@ template $TurntableWindow: Adw.ApplicationWindow {
             Gtk.StackPage {
               name: "viewer";
 
-              child: Gtk.Overlay viewer_overlay {
+              child: Gtk.Overlay {
+                child: $TurntableViewer viewer {
+                  accessibility {
+                    label: _("Model");
+                  }
+                };
+
+                // How many frames a second the view draws, when the setting's on
+                [overlay]
+                Gtk.Label frame_rate {
+                  // Read out as it changes
+                  accessible-role: status;
+                  visible: false;
+                  can-target: false;
+                  halign: end;
+                  valign: start;
+                  margin-top: 12;
+                  margin-end: 12;
+
+                  styles [
+                    "osd",
+                    "frame-rate",
+                    "numeric",
+                    "caption-heading",
+                  ]
+                }
+
                 [overlay]
                 Adw.Spinner spinner {
                   halign: center;
@@ -217,7 +246,7 @@ template $TurntableWindow: Adw.ApplicationWindow {
           };
 
           // Takes a drop over the whole content while something is dragged over the window,
-          // so the WebKit view underneath never receives it
+          // and shows that it will
           [overlay]
           Gtk.Box drop_area {
             can-target: false;
@@ -451,6 +480,11 @@ menu view_menu {
     item {
       label: _("Show _Grid");
       action: "win.show-grid";
+    }
+
+    item {
+      label: _("Show _Frame Rate");
+      action: "win.show-frame-rate";
     }
   }
 }

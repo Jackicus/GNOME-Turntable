@@ -36,16 +36,21 @@ gnome.compile_resources(
   dependencies: blueprints + [metainfo_resource],
 )
 
-configure_file(
-  input: 'turntable.in',
-  output: 'turntable',
-  configuration: {
-    'GJS': gjs.get_variable(pkgconfig: 'gjs_console'),
-    'PKGDATADIR': pkgdatadir,
-    'VERSION': meson.project_version(),
-    'LOCALEDIR': get_option('prefix') / get_option('localedir'),
-  },
+# Cargo builds the binary; it decides itself whether anything changed.
+custom_target(
+  'cargo-build',
+  build_by_default: true,
+  build_always_stale: true,
+  output: meson.project_name(),
+  console: true,
   install: true,
   install_dir: get_option('bindir'),
-  install_mode: 'rwxr-xr-x',
+  env: cargo_env,
+  command: [
+    meson.project_source_root() / 'build-aux' / 'cargo.sh',
+    cargo,
+    meson.project_source_root() / 'Cargo.toml',
+    cargo_target_dir,
+    '@OUTPUT@',
+  ],
 )

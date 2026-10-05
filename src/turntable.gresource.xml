@@ -3,38 +3,10 @@
 <!-- SPDX-FileCopyrightText: 2026 Jack Tully -->
 <gresources>
   <gresource prefix="/io/github/jackicus/Turntable">
-    <file alias="js/main.js">main.js</file>
-    <file alias="js/application.js">application.js</file>
-    <file alias="js/window.js">window.js</file>
-    <file alias="js/viewer.js">viewer.js</file>
-    <file alias="js/scheme.js">scheme.js</file>
-    <file alias="js/formats.js">formats.js</file>
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
     <file preprocess="xml-stripblanks">metainfo.xml</file>
     <file>style.css</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/info-outline-symbolic.svg</file>
-    <file compressed="true">renderer/index.html</file>
-    <file compressed="true">renderer/renderer.js</file>
-    <file compressed="true">renderer/three/addons/controls/OrbitControls.js</file>
-    <file compressed="true">renderer/three/addons/curves/NURBSCurve.js</file>
-    <file compressed="true">renderer/three/addons/curves/NURBSUtils.js</file>
-    <file compressed="true">renderer/three/addons/environments/RoomEnvironment.js</file>
-    <file compressed="true">renderer/three/addons/libs/draco/gltf/draco_decoder.wasm</file>
-    <file compressed="true">renderer/three/addons/libs/draco/gltf/draco_wasm_wrapper.js</file>
-    <file compressed="true">renderer/three/addons/libs/fflate.module.js</file>
-    <file compressed="true">renderer/three/addons/libs/meshopt_decoder.module.js</file>
-    <file compressed="true">renderer/three/addons/loaders/3MFLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/DRACOLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/FBXLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/GLTFLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/MTLLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/OBJLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/PLYLoader.js</file>
-    <file compressed="true">renderer/three/addons/loaders/STLLoader.js</file>
-    <file compressed="true">renderer/three/addons/utils/BufferGeometryUtils.js</file>
-    <file compressed="true">renderer/three/addons/utils/SkeletonUtils.js</file>
-    <file compressed="true">renderer/three/three.core.js</file>
-    <file compressed="true">renderer/three/three.module.js</file>
   </gresource>
 </gresources>

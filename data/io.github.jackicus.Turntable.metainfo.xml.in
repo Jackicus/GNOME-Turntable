@@ -68,6 +68,14 @@
   </provides>
   <translation type="gettext">turntable</translation>
   <releases>
+    <release version="0.2.0" date="2026-10-05">
+      <description>
+        <p>
+          Rewritten in Rust with a renderer of its own: models turn smoothly at your display’s
+          full refresh rate, and open faster.
+        </p>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-10-04">
       <description>
         <p>The first release.</p>

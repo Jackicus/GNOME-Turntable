@@ -42,5 +42,9 @@
       <default>false</default>
       <summary>Show a grid on the floor under the model</summary>
     </key>
+    <key name="show-frame-rate" type="b">
+      <default>false</default>
+      <summary>Show how many frames a second the view draws</summary>
+    </key>
   </schema>
 </schemalist>

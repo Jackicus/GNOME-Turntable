@@ -3,13 +3,24 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "50",
   "sdk": "org.gnome.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable"
+  ],
   "command": "turntable",
   "finish-args": [
     "--share=ipc",
     "--socket=fallback-x11",
     "--socket=wayland",
-    "--device=dri"
+    "--device=dri",
+    "--filesystem=host:ro"
   ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "env": {
+      "CARGO_HOME": "/run/build/turntable/cargo",
+      "CARGO_NET_OFFLINE": "true"
+    }
+  },
   "cleanup": [
     "/include",
     "/lib/pkgconfig",
@@ -20,7 +31,9 @@
     {
       "name": "blueprint-compiler",
       "buildsystem": "meson",
-      "cleanup": ["*"],
+      "cleanup": [
+        "*"
+      ],
       "sources": [
         {
           "type": "git",
@@ -36,7 +49,8 @@
         {
           "type": "dir",
           "path": "../.."
-        }
+        },
+        "cargo-sources.json"
       ]
     }
   ]
