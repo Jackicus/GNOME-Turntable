@@ -11,7 +11,7 @@ fn main() -> glib::ExitCode {
     // 150–230 frames a second instead of 240. Anyone can still choose with GSK_RENDERER.
     if std::env::var_os("GSK_RENDERER").is_none() {
         // SAFETY: no other thread is running yet
-        unsafe { std::env::set_var("GSK_RENDERER", "ngl") };
+        unsafe { std::env::set_var("GSK_RENDERER", "gl") };
     }
     turntable::init_gettext();
     let resources = gio::Resource::load(format!("{PKGDATADIR}/turntable.gresource")).expect("the app’s resources");

@@ -41,7 +41,7 @@ A module with translatable strings goes in `po/POTFILES.in` (tests/project.rs ch
 - Draw on demand: `Viewer::invalidate()` queues a render and keeps a tick callback going while
   something moves (coasting, spin, animation); never a free-running loop. Time comes from the
   frame clock, and damping is per second, not per frame.
-- main.rs sets `GSK_RENDERER=ngl` unless the user set it: GTK's Vulkan renderer costs a few ms
+- main.rs sets `GSK_RENDERER=gl` unless the user set it: GTK's Vulkan renderer costs a few ms
   per GLArea frame on NVIDIA (150–230 fps instead of 240). Keep it unless that's measured gone.
 - Loading happens on a thread (`gio::spawn_blocking`); GL only on the main thread, in the
   GLArea's context. A loader returns a `Model`; `render()` uploads its geometry, then its
