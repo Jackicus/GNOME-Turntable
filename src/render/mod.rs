@@ -3,7 +3,7 @@
 
 //! The renderer: draws the model in the viewer's GL area much as three.js drew it before.
 //! Metallic-roughness PBR lit by an environment and a key light, a shadow caught by an
-//! invisible floor, an optional grid and wireframe; 4× multisampled, on a transparent
+//! invisible floor, an optional grid, axes and wireframe; 4× multisampled, on a transparent
 //! background so the window's own shows through. It draws when asked, never on its own.
 
 mod environment;
@@ -47,6 +47,7 @@ pub struct Settings {
     pub lighting: Lighting,
     pub display: Display,
     pub grid: bool,
+    pub axes: bool,
     pub dark: bool,
     /// The accent colour, linear RGB: the wireframe's
     pub accent: [f32; 3],
@@ -60,6 +61,7 @@ impl Default for Settings {
             lighting: Lighting::Studio,
             display: Display::Shaded,
             grid: false,
+            axes: false,
             dark: false,
             accent: crate::model::srgb_hex(0x3584e4),
             scale: 1.0,
@@ -105,11 +107,46 @@ struct Target {
     height: i32,
 }
 
-struct Grid {
+/// Lines sized to the model: the grid, or the axes. Made again for each model.
+struct Lines {
     vao: glow::VertexArray,
     buffer: glow::Buffer,
     count: i32,
-    radius: f32,
+}
+
+impl Lines {
+    /// Each vertex a position and a linear RGBA colour.
+    fn new(gl: &glow::Context, vertices: &[([f32; 3], [f32; 4])]) -> Self {
+        let data: Vec<[f32; 7]> = vertices.iter().map(|&([x, y, z], [r, g, b, a])| [x, y, z, r, g, b, a]).collect();
+        unsafe {
+            let vao = gl.create_vertex_array().expect("vertex array");
+            gl.bind_vertex_array(Some(vao));
+            let buffer = gl.create_buffer().expect("buffer");
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(buffer));
+            gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, bytemuck::cast_slice(&data), glow::STATIC_DRAW);
+            gl.enable_vertex_attrib_array(attribute::POSITION);
+            gl.vertex_attrib_pointer_f32(attribute::POSITION, 3, glow::FLOAT, false, 28, 0);
+            gl.enable_vertex_attrib_array(attribute::COLOR);
+            gl.vertex_attrib_pointer_f32(attribute::COLOR, 4, glow::FLOAT, false, 28, 12);
+            gl.bind_vertex_array(None);
+            Self { vao, buffer, count: vertices.len() as i32 }
+        }
+    }
+
+    fn destroy(self, gl: &glow::Context) {
+        unsafe {
+            gl.delete_vertex_array(self.vao);
+            gl.delete_buffer(self.buffer);
+        }
+    }
+}
+
+/// The grid's cells, a round number about a tenth of the model's size wide, and how far it
+/// reaches from the middle.
+fn grid_size(radius: f32) -> (f32, usize, f32) {
+    let cell = 10f32.powf((radius / 2.0).log10().floor());
+    let divisions = ((radius * 3.0 / cell).ceil() as usize * 2).clamp(2, 2000);
+    (cell, divisions, divisions as f32 * cell / 2.0)
 }
 
 pub struct Renderer {
@@ -123,7 +160,8 @@ pub struct Renderer {
     empty: glow::VertexArray,
     white: glow::Texture,
     floor: (glow::VertexArray, glow::Buffer),
-    grid: Option<Grid>,
+    grid: Option<Lines>,
+    axes: Option<Lines>,
     shadow: (glow::Framebuffer, glow::Texture),
     /// The shadow is drawn again only when the model, its pose or the light changes
     shadow_dirty: bool,
@@ -262,6 +300,7 @@ impl Renderer {
                 white,
                 floor: (floor_vao, floor_buffer),
                 grid: None,
+                axes: None,
                 shadow: (shadow_framebuffer, shadow_texture),
                 shadow_dirty: true,
                 shadow_lighting: None,
@@ -278,7 +317,7 @@ impl Renderer {
     }
 
     /// Puts `model` on the GPU, in place of any other. `radius` and `height` are of its
-    /// bounding sphere and box: the shadow, floor and grid are sized to them.
+    /// bounding sphere and box: the shadow, floor, grid and axes are sized to them.
     pub fn set_model(&mut self, model: &Model, radius: f32, height: f32) {
         self.clear_model();
         let gpu = GpuModel::new(&self.gl, model, self.limits);
@@ -294,6 +333,9 @@ impl Renderer {
             self.programs.get(&self.gl, key);
         }
         self.model = Some(gpu);
+        for lines in [self.grid.take(), self.axes.take()].into_iter().flatten() {
+            lines.destroy(&self.gl);
+        }
         self.radius = radius;
         self.height = height;
         self.shadow_dirty = true;
@@ -405,6 +447,9 @@ impl Renderer {
                 if settings.grid {
                     self.draw_grid(settings);
                 }
+                if settings.axes {
+                    self.draw_axes();
+                }
                 if shaded {
                     self.draw_blended(frame, camera);
                 }
@@ -484,9 +529,8 @@ impl Renderer {
                 gl.delete_renderbuffer(target.color);
                 gl.delete_renderbuffer(target.depth);
             }
-            if let Some(grid) = self.grid.take() {
-                gl.delete_vertex_array(grid.vao);
-                gl.delete_buffer(grid.buffer);
+            for lines in [self.grid.take(), self.axes.take()].into_iter().flatten() {
+                lines.destroy(gl);
             }
             gl.delete_framebuffer(self.shadow.0);
             gl.delete_texture(self.shadow.1);
@@ -756,51 +800,42 @@ impl Renderer {
     }
 
     unsafe fn draw_grid(&mut self, settings: &Settings) {
-        self.ensure_grid();
-        let gl = &self.gl;
-        let Some(grid) = &self.grid else { return };
-        let program = self.programs.get(gl, Key::new(Kind::Solid));
-        let color = if settings.dark { [1.0, 1.0, 1.0, 0.14] } else { [0.0, 0.0, 0.0, 0.12] };
-        unsafe {
-            gl.use_program(Some(program.program));
-            gl.uniform_matrix_4_f32_slice(program.model.as_ref(), false, &Mat4::IDENTITY.to_cols_array());
-            gl.uniform_4_f32_slice(program.color.as_ref(), &color);
-            gl.uniform_1_i32(program.vertex_colors.as_ref(), 0);
-            draw(gl, grid.vao, glow::LINES, grid.count, None);
+        if self.grid.is_none() {
+            let (cell, divisions, half) = grid_size(self.radius);
+            let mut vertices = Vec::with_capacity((divisions + 1) * 4);
+            for i in 0..=divisions {
+                let k = -half + i as f32 * cell;
+                for position in [[-half, 0.0, k], [half, 0.0, k], [k, 0.0, -half], [k, 0.0, half]] {
+                    vertices.push((position, [1.0; 4]));
+                }
+            }
+            self.grid = Some(Lines::new(&self.gl, &vertices));
         }
+        let color = if settings.dark { [1.0, 1.0, 1.0, 0.14] } else { [0.0, 0.0, 0.0, 0.12] };
+        unsafe { draw_lines(&self.gl, &mut self.programs, self.grid.as_ref().unwrap(), color) };
     }
 
-    /// A round number of cells about a tenth of the model's size wide.
-    fn ensure_grid(&mut self) {
-        if self.grid.as_ref().is_some_and(|g| g.radius == self.radius) {
-            return;
+    /// X red and Z blue across the floor, as far as the grid reaches, and Y green up from the
+    /// middle to a little over the model: its own axes, though it stands on the floor, centred.
+    unsafe fn draw_axes(&mut self) {
+        if self.axes.is_none() {
+            let (_, _, half) = grid_size(self.radius);
+            let color = |hex| {
+                let [r, g, b] = crate::model::srgb_hex(hex);
+                [r, g, b, 1.0]
+            };
+            let (x, y, z) = (color(0xe01b24), color(0x2ec27e), color(0x3584e4));
+            let vertices = [
+                ([-half, 0.0, 0.0], x),
+                ([half, 0.0, 0.0], x),
+                ([0.0, 0.0, 0.0], y),
+                ([0.0, self.height + self.radius * 0.5, 0.0], y),
+                ([0.0, 0.0, -half], z),
+                ([0.0, 0.0, half], z),
+            ];
+            self.axes = Some(Lines::new(&self.gl, &vertices));
         }
-        let gl = &self.gl;
-        let radius = self.radius;
-        let cell = 10f32.powf((radius / 2.0).log10().floor());
-        let divisions = ((radius * 3.0 / cell).ceil() as usize * 2).clamp(2, 2000);
-        let size = divisions as f32 * cell;
-        let half = size / 2.0;
-        let mut vertices: Vec<[f32; 3]> = Vec::with_capacity((divisions + 1) * 4);
-        for i in 0..=divisions {
-            let k = -half + i as f32 * cell;
-            vertices.extend([[-half, 0.0, k], [half, 0.0, k], [k, 0.0, -half], [k, 0.0, half]]);
-        }
-        unsafe {
-            if let Some(old) = self.grid.take() {
-                gl.delete_vertex_array(old.vao);
-                gl.delete_buffer(old.buffer);
-            }
-            let vao = gl.create_vertex_array().expect("vertex array");
-            gl.bind_vertex_array(Some(vao));
-            let buffer = gl.create_buffer().expect("buffer");
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(buffer));
-            gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, bytemuck::cast_slice(&vertices), glow::STATIC_DRAW);
-            gl.enable_vertex_attrib_array(attribute::POSITION);
-            gl.vertex_attrib_pointer_f32(attribute::POSITION, 3, glow::FLOAT, false, 0, 0);
-            gl.bind_vertex_array(None);
-            self.grid = Some(Grid { vao, buffer, count: vertices.len() as i32, radius });
-        }
+        unsafe { draw_lines(&self.gl, &mut self.programs, self.axes.as_ref().unwrap(), [1.0, 1.0, 1.0, 0.85]) };
     }
 }
 
@@ -811,5 +846,17 @@ unsafe fn draw(gl: &glow::Context, vao: glow::VertexArray, mode: u32, count: i32
             Some(kind) => gl.draw_elements(mode, count, kind, 0),
             None => gl.draw_arrays(mode, 0, count),
         }
+    }
+}
+
+/// Lines in their own colours, times `color`.
+unsafe fn draw_lines(gl: &glow::Context, programs: &mut Programs, lines: &Lines, color: [f32; 4]) {
+    let program = programs.get(gl, Key::new(Kind::Solid));
+    unsafe {
+        gl.use_program(Some(program.program));
+        gl.uniform_matrix_4_f32_slice(program.model.as_ref(), false, &Mat4::IDENTITY.to_cols_array());
+        gl.uniform_4_f32_slice(program.color.as_ref(), &color);
+        gl.uniform_1_i32(program.vertex_colors.as_ref(), 1);
+        draw(gl, lines.vao, glow::LINES, lines.count, None);
     }
 }

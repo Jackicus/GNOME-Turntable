@@ -408,6 +408,10 @@ impl Viewer {
         self.update_settings(|s| s.grid = grid);
     }
 
+    pub fn set_axes(&self, axes: bool) {
+        self.update_settings(|s| s.axes = axes);
+    }
+
     /// The style's darkness, and the accent colour as linear RGB.
     pub fn set_theme(&self, dark: bool, accent: [f32; 3]) {
         self.update_settings(|s| {

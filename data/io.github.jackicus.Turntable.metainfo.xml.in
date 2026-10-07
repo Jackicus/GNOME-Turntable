@@ -15,7 +15,7 @@
       <li>Opens glTF, GLB, OBJ, STL, PLY, FBX and 3MF files</li>
       <li>Turn, move and zoom with the mouse, touchpad, touchscreen or keyboard</li>
       <li>Studio, soft, sunlight and dramatic lighting</li>
-      <li>Shaded and wireframe views, and a floor grid</li>
+      <li>Shaded and wireframe views, a floor grid and axes</li>
       <li>Plays the animations a model comes with</li>
       <li>Rotates slowly on its own, like a turntable</li>
       <li>Shows a model's size, vertices, triangles and materials</li>
@@ -40,7 +40,7 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/Jackicus/GNOME-Turntable/main/data/screenshots/lantern.png</image>
-      <caption>Wireframe over the shaded model, on a grid</caption>
+      <caption>Wireframe over the shaded model, on a grid with axes</caption>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>

@@ -8,5 +8,7 @@
     <file preprocess="xml-stripblanks">metainfo.xml</file>
     <file>style.css</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/info-outline-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/display-mode-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/floor-grid-symbolic.svg</file>
   </gresource>
 </gresources>

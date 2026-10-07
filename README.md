@@ -17,10 +17,10 @@ Open a model, turn it around, see it in good light. A simple, native 3D viewer f
 - **Opens the common formats:** glTF, GLB, OBJ, STL, PLY, FBX and 3MF. Open one from Files,
   drag it into the window, or press **Open**.
 - **Moves smoothly:** it draws at your display's full refresh rate, 240 Hz included, and only
-  while something moves. **Show Frame Rate** in the view options shows it.
+  while something moves. **Show Frame Rate** in the main menu shows it.
 - **Lights it nicely:** Studio, Soft, Sunlight or Dramatic lighting, with a soft shadow.
 - **Shows how it's built:** switch to wireframe, or draw it over the shaded model, and add
-  a floor grid.
+  a floor grid and axes.
 - **Plays its animations:** play, pause, scrub, and pick between them.
 - **Spins on its own,** slowly, like a turntable.
 - **Tells you about it:** size, vertices, triangles, meshes, materials and file details.
@@ -31,7 +31,7 @@ It fits right in: light and dark styles, your accent colour, and windows down to
 <table>
   <tr>
     <td><img src="data/screenshots/fox.png" alt="An animated fox with the properties sidebar open"></td>
-    <td><img src="data/screenshots/lantern.png" alt="A lantern drawn as a wireframe over its shaded surface, on a grid"></td>
+    <td><img src="data/screenshots/lantern.png" alt="A lantern drawn as a wireframe over its shaded surface, on a grid with axes"></td>
   </tr>
 </table>
 

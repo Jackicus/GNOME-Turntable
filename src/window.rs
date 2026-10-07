@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2026 Jack Tully
 
 //! A window shows one model: the viewer under a header bar, its controls floating over it,
-//! and its properties in a sidebar. The view settings (lighting, display mode, grid, rotation)
-//! are the app's GSettings, so every window follows the same ones.
+//! and its properties in a sidebar. The view settings (lighting, display mode, grid, axes,
+//! rotation) are the app's GSettings, so every window follows the same ones.
 
 use std::cell::{Cell, RefCell};
 
@@ -18,7 +18,8 @@ use crate::model::{self, Stats, srgb_to_linear};
 use crate::render::{Display, Lighting};
 use crate::viewer::Viewer;
 
-const VIEW_SETTINGS: [&str; 5] = ["auto-rotate", "lighting", "display-mode", "show-grid", "show-frame-rate"];
+const VIEW_SETTINGS: [&str; 6] =
+    ["auto-rotate", "lighting", "display-mode", "show-grid", "show-axes", "show-frame-rate"];
 const MODEL_ACTIONS: [&str; 5] = ["reset-view", "copy-image", "save-image", "show-in-files", "properties"];
 
 mod imp {
@@ -336,6 +337,7 @@ impl Window {
             "lighting" => viewer.set_lighting(Lighting::from_name(&settings.string(key))),
             "display-mode" => viewer.set_display(Display::from_name(&settings.string(key))),
             "show-grid" => viewer.set_grid(settings.boolean(key)),
+            "show-axes" => viewer.set_axes(settings.boolean(key)),
             "show-frame-rate" => self.show_frame_rate(settings.boolean(key)),
             _ => {}
         }

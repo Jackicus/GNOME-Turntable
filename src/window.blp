@@ -212,9 +212,31 @@ template $TurntableWindow: Adw.ApplicationWindow {
 
                     Gtk.MenuButton {
                       icon-name: "display-brightness-symbolic";
-                      menu-model: view_menu;
+                      menu-model: lighting_menu;
                       direction: up;
-                      tooltip-text: _("View Options");
+                      tooltip-text: _("Lighting");
+
+                      styles [
+                        "circular",
+                      ]
+                    }
+
+                    Gtk.MenuButton {
+                      icon-name: "display-mode-symbolic";
+                      menu-model: display_menu;
+                      direction: up;
+                      tooltip-text: _("Display");
+
+                      styles [
+                        "circular",
+                      ]
+                    }
+
+                    Gtk.MenuButton {
+                      icon-name: "floor-grid-symbolic";
+                      menu-model: guides_menu;
+                      direction: up;
+                      tooltip-text: _("Grid and Axes");
 
                       styles [
                         "circular",
@@ -414,6 +436,13 @@ menu primary_menu {
 
   section {
     item {
+      label: _("Show _Frame Rate");
+      action: "win.show-frame-rate";
+    }
+  }
+
+  section {
+    item {
       label: _("_Keyboard Shortcuts");
       action: "app.shortcuts";
     }
@@ -425,10 +454,8 @@ menu primary_menu {
   }
 }
 
-menu view_menu {
+menu lighting_menu {
   section {
-    label: _("Lighting");
-
     item {
       label: _("Studio");
       action: "win.lighting";
@@ -453,10 +480,10 @@ menu view_menu {
       target: "dramatic";
     }
   }
+}
 
+menu display_menu {
   section {
-    label: _("Display");
-
     item {
       label: _("Shaded");
       action: "win.display-mode";
@@ -475,7 +502,9 @@ menu view_menu {
       target: "shaded-wireframe";
     }
   }
+}
 
+menu guides_menu {
   section {
     item {
       label: _("Show _Grid");
@@ -483,8 +512,8 @@ menu view_menu {
     }
 
     item {
-      label: _("Show _Frame Rate");
-      action: "win.show-frame-rate";
+      label: _("Show _Axes");
+      action: "win.show-axes";
     }
   }
 }
